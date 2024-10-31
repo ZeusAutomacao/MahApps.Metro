@@ -21,7 +21,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string Message
         {
-            get { return (string)this.GetValue(MessageProperty); }
+            get { return (string) this.GetValue(MessageProperty); }
             set { this.SetValue(MessageProperty, value); }
         }
 
@@ -30,7 +30,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string Username
         {
-            get { return (string)this.GetValue(UsernameProperty); }
+            get { return (string) this.GetValue(UsernameProperty); }
             set { this.SetValue(UsernameProperty, value); }
         }
 
@@ -39,7 +39,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string UsernameWatermark
         {
-            get { return (string)this.GetValue(UsernameWatermarkProperty); }
+            get { return (string) this.GetValue(UsernameWatermarkProperty); }
             set { this.SetValue(UsernameWatermarkProperty, value); }
         }
 
@@ -48,7 +48,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public CharacterCasing UsernameCharacterCasing
         {
-            get { return (CharacterCasing)this.GetValue(UsernameCharacterCasingProperty); }
+            get { return (CharacterCasing) this.GetValue(UsernameCharacterCasingProperty); }
             set { this.SetValue(UsernameCharacterCasingProperty, value); }
         }
 
@@ -57,7 +57,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string Password
         {
-            get { return (string)this.GetValue(PasswordProperty); }
+            get { return (string) this.GetValue(PasswordProperty); }
             set { this.SetValue(PasswordProperty, value); }
         }
 
@@ -66,7 +66,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string PasswordWatermark
         {
-            get { return (string)this.GetValue(PasswordWatermarkProperty); }
+            get { return (string) this.GetValue(PasswordWatermarkProperty); }
             set { this.SetValue(PasswordWatermarkProperty, value); }
         }
 
@@ -75,7 +75,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string AffirmativeButtonText
         {
-            get { return (string)this.GetValue(AffirmativeButtonTextProperty); }
+            get { return (string) this.GetValue(AffirmativeButtonTextProperty); }
             set { this.SetValue(AffirmativeButtonTextProperty, value); }
         }
 
@@ -84,7 +84,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string NegativeButtonText
         {
-            get { return (string)this.GetValue(NegativeButtonTextProperty); }
+            get { return (string) this.GetValue(NegativeButtonTextProperty); }
             set { this.SetValue(NegativeButtonTextProperty, value); }
         }
 
@@ -93,7 +93,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public Visibility NegativeButtonButtonVisibility
         {
-            get { return (Visibility)this.GetValue(NegativeButtonButtonVisibilityProperty); }
+            get { return (Visibility) this.GetValue(NegativeButtonButtonVisibilityProperty); }
             set { this.SetValue(NegativeButtonButtonVisibilityProperty, value); }
         }
 
@@ -102,7 +102,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public bool ShouldHideUsername
         {
-            get { return (bool)this.GetValue(ShouldHideUsernameProperty); }
+            get { return (bool) this.GetValue(ShouldHideUsernameProperty); }
             set { this.SetValue(ShouldHideUsernameProperty, BooleanBoxes.Box(value)); }
         }
 
@@ -111,7 +111,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public Visibility RememberCheckBoxVisibility
         {
-            get { return (Visibility)this.GetValue(RememberCheckBoxVisibilityProperty); }
+            get { return (Visibility) this.GetValue(RememberCheckBoxVisibilityProperty); }
             set { this.SetValue(RememberCheckBoxVisibilityProperty, value); }
         }
 
@@ -120,7 +120,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public string RememberCheckBoxText
         {
-            get { return (string)this.GetValue(RememberCheckBoxTextProperty); }
+            get { return (string) this.GetValue(RememberCheckBoxTextProperty); }
             set { this.SetValue(RememberCheckBoxTextProperty, value); }
         }
 
@@ -129,8 +129,21 @@ namespace MahApps.Metro.Controls.Dialogs
 
         public bool RememberCheckBoxChecked
         {
-            get { return (bool)this.GetValue(RememberCheckBoxCheckedProperty); }
+            get { return (bool) this.GetValue(RememberCheckBoxCheckedProperty); }
             set { this.SetValue(RememberCheckBoxCheckedProperty, BooleanBoxes.Box(value)); }
+        }
+
+        /// <summary>Identifies the <see cref="ChangeFocusWithEnterOnUsernameField"/> dependency property.</summary>
+        public static readonly DependencyProperty ChangeFocusWithEnterOnUsernameFieldProperty
+            = DependencyProperty.Register(nameof(ChangeFocusWithEnterOnUsernameField),
+                                          typeof(bool),
+                                          typeof(LoginDialog),
+                                          new PropertyMetadata(default(bool)));
+
+        public bool ChangeFocusWithEnterOnUsernameField
+        {
+            get => (bool) this.GetValue(ChangeFocusWithEnterOnUsernameFieldProperty);
+            set => this.SetValue(ChangeFocusWithEnterOnUsernameFieldProperty, value);
         }
 
         internal LoginDialog()
@@ -157,22 +170,23 @@ namespace MahApps.Metro.Controls.Dialogs
             this.RememberCheckBoxVisibility = settings.RememberCheckBoxVisibility;
             this.RememberCheckBoxText = settings.RememberCheckBoxText;
             this.RememberCheckBoxChecked = settings.RememberCheckBoxChecked;
+            this.ChangeFocusWithEnterOnUsernameField = settings.ChangeFocusOnUsernameFieldWithEnter;
         }
 
         internal Task<LoginDialogData> WaitForButtonPressAsync()
         {
             this.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.Focus();
+                if (string.IsNullOrEmpty(this.PART_TextBox.Text) && !this.ShouldHideUsername)
                 {
-                    this.Focus();
-                    if (string.IsNullOrEmpty(this.PART_TextBox.Text) && !this.ShouldHideUsername)
-                    {
-                        this.PART_TextBox.Focus();
-                    }
-                    else
-                    {
-                        this.PART_TextBox2.Focus();
-                    }
-                }));
+                    this.PART_TextBox.Focus();
+                }
+                else
+                {
+                    this.PART_TextBox2.Focus();
+                }
+            }));
 
             TaskCompletionSource<LoginDialogData> tcs = new TaskCompletionSource<LoginDialogData>();
 
@@ -185,88 +199,95 @@ namespace MahApps.Metro.Controls.Dialogs
             KeyEventHandler escapeKeyHandler = null;
 
             Action cleanUpHandlers = () =>
-                {
-                    this.PART_TextBox.KeyDown -= affirmativeKeyHandler;
-                    this.PART_TextBox2.KeyDown -= affirmativeKeyHandler;
+            {
+                this.PART_TextBox.KeyDown -= affirmativeKeyHandler;
+                this.PART_TextBox2.KeyDown -= affirmativeKeyHandler;
 
-                    this.KeyDown -= escapeKeyHandler;
+                this.KeyDown -= escapeKeyHandler;
 
-                    this.PART_NegativeButton.Click -= negativeHandler;
-                    this.PART_AffirmativeButton.Click -= affirmativeHandler;
+                this.PART_NegativeButton.Click -= negativeHandler;
+                this.PART_AffirmativeButton.Click -= affirmativeHandler;
 
-                    this.PART_NegativeButton.KeyDown -= negativeKeyHandler;
-                    this.PART_AffirmativeButton.KeyDown -= affirmativeKeyHandler;
+                this.PART_NegativeButton.KeyDown -= negativeKeyHandler;
+                this.PART_AffirmativeButton.KeyDown -= affirmativeKeyHandler;
 
-                    this.cancellationTokenRegistration.Dispose();
-                };
+                this.cancellationTokenRegistration.Dispose();
+            };
 
             this.cancellationTokenRegistration = this.DialogSettings
                                                      .CancellationToken
                                                      .Register(() =>
+                                                     {
+                                                         this.BeginInvoke(() =>
                                                          {
-                                                             this.BeginInvoke(() =>
-                                                                 {
-                                                                     cleanUpHandlers();
-                                                                     tcs.TrySetResult(null);
-                                                                 });
+                                                             cleanUpHandlers();
+                                                             tcs.TrySetResult(null);
                                                          });
+                                                     });
 
             escapeKeyHandler = (sender, e) =>
-                {
-                    if (e.Key == Key.Escape || (e.Key == Key.System && e.SystemKey == Key.F4))
-                    {
-                        cleanUpHandlers();
-
-                        tcs.TrySetResult(null);
-                    }
-                };
-
-            negativeKeyHandler = (sender, e) =>
-                {
-                    if (e.Key == Key.Enter)
-                    {
-                        cleanUpHandlers();
-
-                        tcs.TrySetResult(null);
-                    }
-                };
-
-            affirmativeKeyHandler = (sender, e) =>
-                {
-                    if (e.Key == Key.Enter)
-                    {
-                        cleanUpHandlers();
-                        tcs.TrySetResult(new LoginDialogData
-                                         {
-                                             Username = this.Username,
-                                             SecurePassword = this.PART_TextBox2.SecurePassword,
-                                             ShouldRemember = this.RememberCheckBoxChecked
-                                         });
-                    }
-                };
-
-            negativeHandler = (sender, e) =>
+            {
+                if (e.Key == Key.Escape || (e.Key == Key.System && e.SystemKey == Key.F4))
                 {
                     cleanUpHandlers();
 
                     tcs.TrySetResult(null);
+                }
+            };
 
-                    e.Handled = true;
-                };
-
-            affirmativeHandler = (sender, e) =>
+            negativeKeyHandler = (sender, e) =>
+            {
+                if (e.Key == Key.Enter)
                 {
                     cleanUpHandlers();
 
-                    tcs.TrySetResult(new LoginDialogData
-                                     {
-                                         Username = this.Username,
-                                         SecurePassword = this.PART_TextBox2.SecurePassword,
-                                         ShouldRemember = this.RememberCheckBoxChecked
-                                     });
+                    tcs.TrySetResult(null);
+                }
+            };
 
-                    e.Handled = true;
-                };
+            affirmativeKeyHandler = (sender, e) =>
+            {
+                if (e.Key == Key.Enter)
+                {
+                    if (PART_TextBox != null && PART_TextBox.IsFocused && ChangeFocusWithEnterOnUsernameField)
+                    {
+                        PART_TextBox2?.Focus();
+                    }
+                    else
+                    {
+                        cleanUpHandlers();
+                        tcs.TrySetResult(new LoginDialogData
+                        {
+                            Username = this.Username,
+                            SecurePassword = this.PART_TextBox2.SecurePassword,
+                            ShouldRemember = this.RememberCheckBoxChecked
+                        });
+                    }
+                }
+            };
+
+            negativeHandler = (sender, e) =>
+            {
+                cleanUpHandlers();
+
+                tcs.TrySetResult(null);
+
+                e.Handled = true;
+            };
+
+            affirmativeHandler = (sender, e) =>
+            {
+                cleanUpHandlers();
+
+                tcs.TrySetResult(new LoginDialogData
+                {
+                    Username = this.Username,
+                    SecurePassword = this.PART_TextBox2.SecurePassword,
+                    ShouldRemember = this.RememberCheckBoxChecked
+                });
+
+                e.Handled = true;
+            };
 
             this.PART_NegativeButton.KeyDown += negativeKeyHandler;
             this.PART_AffirmativeButton.KeyDown += affirmativeKeyHandler;
